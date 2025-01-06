@@ -1,0 +1,23 @@
+import numpy as np
+import pandas as pd
+from hmmlearn.hmm import MultinomialHMM
+
+# 数据预处理
+data = [1, 9, 9, 3, 1, 2, 8, 5, 0, 5, 4, 0, 9, 2, 4, 6, 5, 2, 5, 8, 4, 8, 6, 8, 6, 3, 0, 5, 0, 6, 9,
+        8, 1, 9, 2, 3, 9, 2, 2, 6, 7, 5, 1, 1, 5, 8, 6, 8, 7, 6, 4, 1, 6, 1, 0, 6, 4, 5, 1, 7, 7, 9]
+observations = np.array(data).reshape(-1, 1)
+
+# 定义HMM模型
+model = MultinomialHMM(n_components=10, random_state=42, n_iter=100)
+model.fit(observations)
+
+# 预测权重
+next_prob = model.transmat_.dot(model.emissionprob_).sum(axis=0)
+
+# 输出结果
+result = pd.DataFrame({
+    "Number": np.arange(10),
+    "Weight": next_prob
+}).sort_values(by="Weight", ascending=False)
+
+print(result)
